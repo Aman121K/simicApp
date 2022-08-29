@@ -12,7 +12,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-
+import ControlPanel from '../../../Navigation/ControlPanel';
 import {
   Title,
   Paragraph,
@@ -21,7 +21,9 @@ import {
 import axios from "axios";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_BASE_URL} from '../../../Services/url';
+import { API_BASE_URL } from '../../../Services/url';
+import HomeHeader from '../../../Component/HomeHeader';
+import Drawer from 'react-native-drawer'
 const Listing = ({ navigation }) => {
   const [userToken, setUserToken] = React.useState(null);
   const [isLoading, setisLoading] = React.useState(false);
@@ -29,16 +31,17 @@ const Listing = ({ navigation }) => {
   const [filterItemData, setfilterItemData] = React.useState([]);
   const [pageNumber, setPageNumber] = React.useState(1);
   const [search, setSearch] = useState('');
+  const [drawerStatus, setDrawerStatus] = React.useState(false);
 
   useEffect(() => {
     fetchAssetsList(1)
   }, []);
   const fetchAssetsList = async (pagenumber) => {
-    let userToken = await AsyncStorage.getItem('userToken');
+    let userToken = '1';
     setUserToken(userToken);
     if (userToken != null) {
       let formData = {
-        user_id: userToken,
+        user_id: '1',
         search_key: '',
       }
       axios({
@@ -50,7 +53,7 @@ const Listing = ({ navigation }) => {
           'Content-Type': 'multipart/form-data',
         },
       }).then(res => {
-        console.log("data is",res);
+        console.log("data is", res);
         if (res.data.status == 1) {
           let item_list = JSON.stringify(res.data.item_list);
           console.log("Vikas All listing data..", item_list);
@@ -77,8 +80,6 @@ const Listing = ({ navigation }) => {
       });
     }
   }
-
-
   const searchFilterFunction = (text) => {
     // Check if searched text is not blank
     if (text) {
@@ -115,19 +116,15 @@ const Listing = ({ navigation }) => {
         </View>
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center', marginTop: 8, borderTopColor: '#EEE', borderTopWidth: 1, paddingTop: 8 }}>
           <TouchableOpacity onPress={() =>
-            navigation.navigate('ViewAsset', {
-              screen: 'AssetViewScreen',
-              params: {
-                itemId: item.item_id,
-                itemTitle: item.item_name
-              },
-            })
+            navigation.navigate('AssetViewScreen', {
+              data: item
+            }
+            )
           } style={{ flexDirection: 'row' }}>
             <Ionicons name="eye-outline" color='#04487b' size={16}></Ionicons><Text style={{ marginLeft: 4, color: '#04487b', fontSize: 13 }}>Visualizzazione</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() =>
-            navigation.navigate('EditAsset', {
-              screen: 'AssetEditScreen',
+            navigation.navigate('AssetsEditing', {
               params: {
                 itemId: item.item_id,
                 itemTitle: item.item_name
@@ -136,15 +133,7 @@ const Listing = ({ navigation }) => {
           } style={{ flexDirection: 'row', marginLeft: 13, marginRight: 13 }}>
             <Ionicons name="ios-create-outline" color='#ff8c00' size={16}></Ionicons><Text style={{ marginLeft: 0, color: '#ff8c00', fontSize: 13 }}>Modifica</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() =>
-            navigation.navigate('EditAsset', {
-              screen: 'AssetEditScreen',
-              params: {
-                itemId: item.item_id,
-                itemTitle: item.item_name
-              },
-            })
-          } style={{ flexDirection: 'row' }}>
+          <TouchableOpacity onPress={() => alert("Are you want to delete")} style={{ flexDirection: 'row' }}>
             <Ionicons name="ios-trash-outline" color='#B31817' size={16}></Ionicons><Text style={{ marginLeft: 0, color: '#B31817', fontSize: 13 }}>Cancella</Text>
           </TouchableOpacity>
 
@@ -182,27 +171,52 @@ const Listing = ({ navigation }) => {
 
     setPageNumber(pageNumber + 1)
   }
-const AddAssets=()=>{
+  const AddAssets = () => {
     navigation.navigate('AssetAddition');
-}
-const ScanAssets=()=>{
+  }
+  const ScanAssets = () => {
     Alert.alert("Scan")
-}
+  }
+  const drawerStyles = {
+    drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3 },
+    main: { paddingLeft: 3 },
+  }
+  const openDrawer = () => {
+    setDrawerStatus(!drawerStatus);
+  }
   return (
-    <View style={styles.container}>
-      <StatusBar backgroundColor='#04487b' hidden={false} />
-      <View style={{ flex: 1, marginTop: 20 }}>
+    <Drawer
+      type="overlay"
+      open={drawerStatus}
+      content={<ControlPanel  navigation={navigation}/>}
+      tapToClose={true}
+      openDrawerOffset={0.25} // 20% gap on the right side of drawer
+      panCloseMask={0.2}
+      closedDrawerOffset={-3}
+      styles={drawerStyles}
+      tweenHandler={(ratio) => ({
+        main: { opacity: (2 - ratio) / 2 }
+      })}
+    >
 
-        <TextInput
+      <>
+        <HomeHeader title="Tutti gli oggetti" openDrawer={openDrawer} />
 
-          placeholder="Cerca qui..."
-          style={[styles.textInputStyle, styles.fontRegular]}
-          underlineColorAndroid="transparent"
-          value={search}
-          onChangeText={(text) => searchFilterFunction(text)}
-        >
-        </TextInput>
-        {/* <SearchBar
+        <View style={styles.container}>
+          <StatusBar backgroundColor='#04487b' hidden={false} />
+
+          <View style={{ flex: 1, marginTop: 20 }}>
+
+            <TextInput
+
+              placeholder="Cerca qui..."
+              style={[styles.textInputStyle, styles.fontRegular]}
+              underlineColorAndroid="transparent"
+              value={search}
+              onChangeText={(text) => searchFilterFunction(text)}
+            >
+            </TextInput>
+            {/* <SearchBar
           placeholder="Cerca qui..."
           style={[styles.textInputStyle, styles.fontRegular]}
           underlineColorAndroid="transparent"
@@ -210,27 +224,30 @@ const ScanAssets=()=>{
           //onPress={() => alert("onPress")}
           onChangeText={(text) => searchFilterFunction(text)}
         /> */}
-        <FlatList
-          data={filterItemData}
-          keyExtractor={(item, index) => index.toString()}
-          ItemSeparatorComponent={ItemSeparatorView}
-          renderItem={ItemView}
-          onEndReached={callMoreApi}
-          onEndReachedThreshold={0.1}
-          style={{ marginTop: 20 }}
-        />
-        <View style={{ flex: 1 }}>
-          <View style={{ position: 'absolute', bottom: 80, right: 10, alignSelf: 'flex-end' }}>
-            <TouchableOpacity onPress={()=>ScanAssets()}><Ionicons name="ios-qr-code-outline" color='#B31817' size={30}></Ionicons>
-            </TouchableOpacity>
-          </View>
-          <View style={{ position: 'absolute', bottom: 20, alignSelf: 'flex-end' }}>
-            <TouchableOpacity onPress={()=>AddAssets()}><Ionicons name="add-circle-sharp" color='#B31817' size={45}></Ionicons>
-            </TouchableOpacity>
+            <FlatList
+              data={filterItemData}
+              keyExtractor={(item, index) => index.toString()}
+              ItemSeparatorComponent={ItemSeparatorView}
+
+              renderItem={ItemView}
+              onEndReached={callMoreApi}
+              onEndReachedThreshold={0.1}
+              style={{ marginTop: 20 }}
+            />
+            <View style={{ flex: 1 }}>
+              <View style={{ position: 'absolute', bottom: 80, right: 10, alignSelf: 'flex-end' }}>
+                <TouchableOpacity onPress={() => ScanAssets()}><Ionicons name="ios-qr-code-outline" color='#B31817' size={30}></Ionicons>
+                </TouchableOpacity>
+              </View>
+              <View style={{ position: 'absolute', bottom: 20, alignSelf: 'flex-end' }}>
+                <TouchableOpacity onPress={() => AddAssets()}><Ionicons name="add-circle-sharp" color='#B31817' size={45}></Ionicons>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </View>
-      </View>
-    </View>
+      </>
+    </Drawer>
   );
 
 };
@@ -242,6 +259,8 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     paddingRight: 15,
   },
+  drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3 },
+  main: { paddingLeft: 3 },
   itemStyle: {
     padding: 10,
   },

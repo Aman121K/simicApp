@@ -35,7 +35,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL } from '../../../Services/url';
 
 const Addition = ({ navigation }) => {
     const [name, setName] = useState();
@@ -50,23 +50,23 @@ const Addition = ({ navigation }) => {
 
     return (
         <View style={{ flex: 1 }}>
-            <View>
+            <View style={styles.inputConatiner}>
                 <TextInput
-                    style={{ height: 40 }}
+                    style={{ height: 40 ,marginLeft:10}}
                     placeholder="Nome oggetto"
-                    onChangeText={newText => setText(newText)}
+                    onChangeText={newText => setName(newText)}
                 />
             </View>
-            <View>
+            <View style={styles.inputConatiner}>
                 <TextInput
-                    style={{ height: 40 }}
+                    style={{ height: 40,marginLeft:10 }}
                     placeholder="Data di scadenza"
-                    onChangeText={newText => setText(newText)}
+                    onChangeText={newText => setDataDate(newText)}
                 />
             </View>
-            <View>
+            <View  style={styles.inputConatiner}>
                 <Dropdown
-                    style={styles.dropdown}
+                    style={{marginLeft:10}}
                     placeholderStyle={{ color: 'black' }}
                     selectedTextStyle={{ color: 'black' }}
                     inputSearchStyle={styles.inputSearchStyle}
@@ -76,32 +76,27 @@ const Addition = ({ navigation }) => {
                     search
                     labelField="label"
                     valueField="value"
-                    placeholder="Select a Car *"
+                    placeholder="Stato*"
                     searchPlaceholder="Search..."
                     // value={previousCarList}
                     onChange={item => {
-                        setCar(item);
-                        console.log("vikkkk", item.label);
-                        if (item.label == 'Select New Car') {
-                            setIsShowPreviousCarList(!isShowPreviousCarList)
-                        }
-                        else {
-                            setIsShowPreviousCarList(false)
-                        }
+                        setStato(item)
                     }}
                 />
             </View>
-            <View>
+            <View  style={styles.inputConatiner}>
                 <TextInput
-                    style={{ height: 80 }}
-                    numberOfLines="5"
+                    style={{ height: 80,marginLeft:10 }}
+                    // numberOfLines="5"
                     placeholder="Descrizione"
-                    onChangeText={newText => setText(newText)}
+                    onChangeText={newText => setDrescription(newText)}
                 />
+            </View>
+            <View style={{alignSelf:'center',width:'60%'}}>
+                <Button title='Save' color="#04487b"/>
             </View>
         </View>
     );
-
 };
 
 const styles = StyleSheet.create({
@@ -111,6 +106,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         paddingRight: 15,
     },
+    inputConatiner:{borderWidth:1,alignSelf:'center',width:'90%',margin:10,borderRadius:10},
     itemStyle: {
         padding: 10,
     },
