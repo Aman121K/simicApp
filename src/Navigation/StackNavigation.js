@@ -1,5 +1,5 @@
 
-import React from 'react';
+import * as React from 'react';
 import { createNativeStackNavigator  } from '@react-navigation/native-stack';
 import Signin from '../Screen/Auth/Signin';
 import Signup from '../Screen/Auth/Signup';
@@ -17,7 +17,7 @@ import ProfileScreen from '../Screen/ProfileScreen';
 import AssetViewScreen from '../Screen/Assets/View';
 import DocumentViewScreen from '../Screen/Documents/View';
 import LocationViewScreen from '../Screen/Locations/View';
-// import DrawerNavigation from './DrawerNavigation';
+import DrawerNavigation from './DrawerNavigation';
 const Stack = createNativeStackNavigator();
 const StacksNavigation = () => {
     return (
@@ -39,7 +39,7 @@ const StacksNavigation = () => {
            <Stack.Screen name="AssetViewScreen" component={AssetViewScreen} options={{title:"Dettagli dell'articolo" ,headerTintColor:'white', headerStyle:{backgroundColor:'#04487b'}}} />
             <Stack.Screen name="DocumentViewScreen" component={DocumentViewScreen} options={{ headerShown: false }} />
            <Stack.Screen name="LocationViewScreen" component={LocationViewScreen} options={{title:'Profilo'}}/>
-           {/* <Stack.Screen name="Drawer" component={DrawerNavigation} options={{headerShown:false}}/> */}
+           <Stack.Screen name="DrawerScreen" component={DrawerNavigation}/>
         </Stack.Navigator>
     )
 }

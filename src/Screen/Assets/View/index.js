@@ -28,56 +28,56 @@ console.log("Vikas Params..",data)
   const [itemDetails, setItemDetails] = useState([]);
   const [itemLocation, setItemLocation] = useState([]);
   useEffect( () => {
-      // navigation.setOptions({ title: itemTitle }),
       (
         async() => { 
           const userToken = await AsyncStorage.getItem('userToken');
           setUserToken(userToken);
-          //console.log(userToken);
-          if( userToken != null ){
-              let formData = {
-                  user_id : userToken,
-                  item_id : itemId,
-              }
-              axios({
-                  url: `${API_BASE_URL}/itemView`,
-                  method: 'POST',
-                  data: formData,
-                  headers: {
-                      'Accept': 'application/json',
-                      'Content-Type': 'multipart/form-data',
-                  },
-              }).then(res => {
-                if(res.data.status == 1){
-                  let itemdetail = JSON.stringify(res.data.item_details);
-                  let itemdetailjson = JSON.parse(itemdetail);
-                  setItemDetails(itemdetailjson);
-                  let itemlocation = JSON.stringify(res.data.item_details.location_details.location);
-                  let itemlocationjson = JSON.parse(itemlocation);
-                  setItemLocation(itemlocationjson);
-                }else{
-                  Alert.alert(
-                      "Warning",
-                      "Somthing went wrong, Try Again",
-                      [
-                        { text: "OK" }
-                      ]
-                  );
-                }
-
-              }).catch(e => {
-                  Alert.alert(
-                      "Warning",
-                      "Somthing went wrong, Try Again",
-                      [
-                        { text: "OK" }
-                      ]
-                  );
-              });
-          }
+          getItemDetials()
         }
       ) ();
   },[]);
+  const getItemDetials=()=>{
+      let formData = {
+          user_id :'1',
+          item_id : data?.item_id,
+      }
+      axios({
+          url: `${API_BASE_URL}/itemView`,
+          method: 'POST',
+          data: formData,
+          headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'multipart/form-data',
+          },
+      }).then(res => {
+        console.log("vikas view page..",res)
+        if(res.data.status == 1){
+          let itemdetail = JSON.stringify(res.data.item_details);
+          let itemdetailjson = JSON.parse(itemdetail);
+          setItemDetails(itemdetailjson);
+          let itemlocation = JSON.stringify(res.data.item_details.location_details.location);
+          let itemlocationjson = JSON.parse(itemlocation);
+          setItemLocation(itemlocationjson);
+        }else{
+          Alert.alert(
+              "Warning",
+              "Somthing went wrong, Try Again",
+              [
+                { text: "OK" }
+              ]
+          );
+        }
+
+      }).catch(e => {
+          Alert.alert(
+              "Warning",
+              "Somthing went wrong, Try Again",
+              [
+                { text: "OK" }
+              ]
+          );
+      });
+  }
     return(
           <View style={[ styles.container ]}>
             <View style={{ marginTop: 20 }}>
@@ -100,7 +100,7 @@ console.log("Vikas Params..",data)
               </View>
               <View style={{  flexDirection: 'row', justifyContent: 'space-between', alignItems:'center' }}>
                 <Title style={[ styles.regularFont, { fontSize: 14 }]}>Stato articolo: </Title>
-                <Text style={[ styles.regularFont, { fontSize: 14 }]}>{data?.status_name}</Text>
+                <Text style={[ styles.regularFont, { fontSize: 14 }]}>{data?.status_id}</Text>
               </View>
               <View style={{  flexDirection: 'row', justifyContent: 'space-between', alignItems:'center', flexWrap: 'wrap' }}>
                 <Title style={[ styles.regularFont, { fontSize: 14 }]}>Nome posizione: </Title>

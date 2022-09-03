@@ -11,7 +11,7 @@ import {
   Image,
   TouchableOpacity,
 } from 'react-native';
-
+import ControlPanel from '../../../Navigation/ControlPanel';
 import {
   Title,
   Paragraph,
@@ -20,6 +20,8 @@ import axios from "axios";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from '../../../Services/url';
+import Drawer from 'react-native-drawer';
+import HomeHeader from '../../../Component/HomeHeader';
 
 const LocationListingScreen = ({ navigation }) => {
   const [userToken, setUserToken] = useState(null);
@@ -27,11 +29,13 @@ const LocationListingScreen = ({ navigation }) => {
   const [masterItemData, setmasterItemData] = useState([]);
   const [filterItemData, setfilterItemData] = useState([]);
   const [search, setSearch] = useState('');
+  const [drawerStatus, setDrawerStatus] = React.useState(false);
 
   useEffect(() => {
     (
       async () => {
-        let userToken = await AsyncStorage.getItem('userToken');
+        // let userToken = await AsyncStorage.getItem('userToken');
+        let userToken='1';
         setUserToken(userToken);
         if (userToken != null) {
           axios({
@@ -71,7 +75,13 @@ const LocationListingScreen = ({ navigation }) => {
     )();
 
   });
-
+  const openDrawer = () => {
+    setDrawerStatus(!drawerStatus);
+  }
+  const drawerStyles = {
+    drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3 },
+    main: { paddingLeft: 3 },
+  }
   const ItemView = ({ item }) => {
     return (
       <View style={{ padding: 10, backgroundColor: '#FFF', borderRadius: 10 }} >
@@ -175,6 +185,22 @@ const LocationListingScreen = ({ navigation }) => {
   }
 
   return (
+    <Drawer
+    type="overlay"
+    open={drawerStatus}
+    content={<ControlPanel  navigation={navigation}/>}
+    tapToClose={true}
+    openDrawerOffset={0.25} // 20% gap on the right side of drawer
+    panCloseMask={0.2}
+    closedDrawerOffset={-3}
+    styles={drawerStyles}
+    tweenHandler={(ratio) => ({
+      main: { opacity: (2 - ratio) / 2 }
+    })}
+  >
+
+    <>
+      <HomeHeader title="Tutti gli oggetti" openDrawer={openDrawer} />
     <View style={styles.container}>
       <StatusBar backgroundColor='#04487b' hidden={false} />
       <View style={{ flex: 1, marginTop: 20 }}>
@@ -202,6 +228,8 @@ const LocationListingScreen = ({ navigation }) => {
         </View>
       </View>
     </View>
+    </>
+    </Drawer>
   );
 };
 

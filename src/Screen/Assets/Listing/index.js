@@ -177,38 +177,14 @@ const Listing = ({ navigation }) => {
   const ScanAssets = () => {
     Alert.alert("Scan")
   }
-  const drawerStyles = {
-    drawer: { shadowColor: '#000000', shadowOpacity: 0.8, shadowRadius: 3 },
-    main: { paddingLeft: 3 },
-  }
-  const openDrawer = () => {
-    setDrawerStatus(!drawerStatus);
-  }
+
   return (
-    <Drawer
-      type="overlay"
-      open={drawerStatus}
-      content={<ControlPanel  navigation={navigation}/>}
-      tapToClose={true}
-      openDrawerOffset={0.25} // 20% gap on the right side of drawer
-      panCloseMask={0.2}
-      closedDrawerOffset={-3}
-      styles={drawerStyles}
-      tweenHandler={(ratio) => ({
-        main: { opacity: (2 - ratio) / 2 }
-      })}
-    >
-
       <>
-        <HomeHeader title="Tutti gli oggetti" openDrawer={openDrawer} />
-
+        <HomeHeader title="Tutti gli oggetti" />
         <View style={styles.container}>
           <StatusBar backgroundColor='#04487b' hidden={false} />
-
           <View style={{ flex: 1, marginTop: 20 }}>
-
             <TextInput
-
               placeholder="Cerca qui..."
               style={[styles.textInputStyle, styles.fontRegular]}
               underlineColorAndroid="transparent"
@@ -216,14 +192,7 @@ const Listing = ({ navigation }) => {
               onChangeText={(text) => searchFilterFunction(text)}
             >
             </TextInput>
-            {/* <SearchBar
-          placeholder="Cerca qui..."
-          style={[styles.textInputStyle, styles.fontRegular]}
-          underlineColorAndroid="transparent"
-          value={search}
-          //onPress={() => alert("onPress")}
-          onChangeText={(text) => searchFilterFunction(text)}
-        /> */}
+         
             <FlatList
               data={filterItemData}
               keyExtractor={(item, index) => index.toString()}
@@ -247,7 +216,6 @@ const Listing = ({ navigation }) => {
           </View>
         </View>
       </>
-    </Drawer>
   );
 
 };
